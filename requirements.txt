@@ -1,6 +1,7 @@
 streamlit
 python-docx
 gTTS
+pyttsx3
 tqdm
 pydub
 pdfplumber
