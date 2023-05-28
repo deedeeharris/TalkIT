@@ -5,7 +5,7 @@ from gtts import gTTS
 st.title("TalkIt - PDF to mp3!")
 
 # App created by Yedidya Harris
-st.markdown("### App created by [Yedidya Harris](https://www.linkedin.com/in/yedidya-harris)")
+st.markdown("#### by [Yedidya Harris](https://www.linkedin.com/in/yedidya-harris)")
 
 
 book = st.file_uploader("Please upload your PDF")
