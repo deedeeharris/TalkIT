@@ -20,26 +20,10 @@ def generate_mp3(text, file_path):
     temp_file_path = os.path.join(temp_dir, "temp.mp3")
 
     tts = gTTS(text=text, lang='en')
-    
-    # Estimate the speech length based on the number of characters
-    speech_length = len(text) / 16  # Assuming 16 characters per second
-    
-    # Create a progress bar with the total length of the speech
-    progress_bar = tqdm(total=speech_length, unit='sec', desc='Generating MP3', ncols=80)
-    
+
     # Save the speech as a temporary MP3 file
     tts.save(temp_file_path)
-    
-    # Update the progress bar every second until it reaches the estimated length
-    current_duration = 0
-    while current_duration < speech_length:
-        time.sleep(1)
-        current_duration += 1
-        progress_bar.update(1)
-    
-    # Close the progress bar
-    progress_bar.close()
-    
+
     # Move the temporary MP3 file to the desired location
     os.makedirs(os.path.dirname(file_path), exist_ok=True)
     os.rename(temp_file_path, file_path)
@@ -77,8 +61,9 @@ if text:
             st.success("MP3 file generated successfully.")
 
             # Play the MP3 file
-            audio = AudioSegment.from_file(mp3_file_path)
+            audio = AudioSegment.from_file(mp3_file_path, format="mp3")
             st.audio(audio)
 
             # Download the MP3 file
-            st.download_button("Download MP3", mp3_file_path, "mp3")
+            with open(mp3_file_path, "rb") as file:
+                st.download_button("Download MP3", file.read(), file_name="generated_audio.mp3", mime="audio/mpeg")
