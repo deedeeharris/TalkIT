@@ -2,7 +2,7 @@ import streamlit as st
 import pdfplumber
 from gtts import gTTS
 
-st.title("Convert all your E-books to Audio Books just like that!")
+st.title("TalkIt - PDF to mp3!")
 book = st.file_uploader("Please upload your PDF")
 
 if book is not None:
@@ -26,7 +26,7 @@ if book is not None:
 
     # Download audio file
     st.download_button(
-        label="Download Audio Book",
+        label="Download Your Audio File",
         data='audio_book.mp3',
         file_name='audio_book.mp3',
         mime='audio/mp3'
