@@ -28,8 +28,8 @@ if book is not None:
             progress = (i + 1) / total_pages
             progress_bar.progress(progress)
 
-    # Initialize pyttsx3 TTS engine
-    engine = pyttsx3.init()
+    # Initialize pyttsx3 TTS engine with the "sapi5" driver
+    engine = pyttsx3.init(driverName='sapi5')
 
     # Save the text to an audio file
     audio_file = "audio_book.mp3"
