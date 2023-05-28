@@ -1,6 +1,6 @@
 import streamlit as st
 import pdfplumber
-from gtts import gTTS
+import pyttsx3
 import base64
 
 # Add this line to modify the HTML head section
@@ -28,16 +28,21 @@ if book is not None:
             progress = (i + 1) / total_pages
             progress_bar.progress(progress)
 
-    tts = gTTS(all_text)
-    tts.save('audio_book.mp3')
+    # Initialize pyttsx3 TTS engine
+    engine = pyttsx3.init()
+
+    # Save the text to an audio file
+    audio_file = "audio_book.mp3"
+    engine.save_to_file(all_text, audio_file)
+    engine.runAndWait()
 
     # Download audio file
-    with open('audio_book.mp3', 'rb') as audio_file:
+    with open(audio_file, 'rb') as audio_file:
         audio_bytes = audio_file.read()
         b64 = base64.b64encode(audio_bytes).decode()
         href = f'<a href="data:audio/mp3;base64,{b64}" download="audio_book.mp3">Download Your Audio File</a>'
         st.markdown(href, unsafe_allow_html=True)
 
-    audio_file = open('audio_book.mp3', 'rb')
+    audio_file = open(audio_file, 'rb')
     audio_bytes = audio_file.read()
     st.audio(audio_bytes, format='audio/mp3')
