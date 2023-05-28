@@ -1,10 +1,12 @@
 import streamlit as st
 import pdfplumber
 from gtts import gTTS
+import base64
+
+# Add this line to modify the HTML head section
+st.set_page_config(page_title="TalkIt - PDF to mp3!", page_icon="favicon.ico")
 
 st.title("TalkIt - PDF to mp3!")
-
-# App created by Yedidya Harris
 st.markdown("#### by [Yedidya Harris](https://www.linkedin.com/in/yedidya-harris)")
 
 st.markdown("## Please upload your PDF")
@@ -17,7 +19,7 @@ if book is not None:
     with pdfplumber.open(book) as pdf:
         all_text = ""
         total_pages = len(pdf.pages)
-        
+
         for i, page in enumerate(pdf.pages):
             text = page.extract_text()
             all_text += text + "\n"
@@ -30,12 +32,11 @@ if book is not None:
     tts.save('audio_book.mp3')
 
     # Download audio file
-    st.download_button(
-        label="Download Your Audio File",
-        data='audio_book.mp3',
-        file_name='audio_book.mp3',
-        mime='audio/mp3'
-    )
+    with open('audio_book.mp3', 'rb') as audio_file:
+        audio_bytes = audio_file.read()
+        b64 = base64.b64encode(audio_bytes).decode()
+        href = f'<a href="data:audio/mp3;base64,{b64}" download="audio_book.mp3">Download Your Audio File</a>'
+        st.markdown(href, unsafe_allow_html=True)
 
     audio_file = open('audio_book.mp3', 'rb')
     audio_bytes = audio_file.read()
