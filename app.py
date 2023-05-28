@@ -5,6 +5,8 @@ from gtts import gTTS
 from tqdm import tqdm
 import time
 import tempfile
+from pydub import AudioSegment
+import base64
 
 def read_docx(file_path):
     document = docx.Document(file_path)
@@ -45,20 +47,26 @@ def generate_mp3(text, file_path):
 # Streamlit app
 st.title("Text-to-Speech Converter")
 
-# File upload
-uploaded_file = st.file_uploader("Upload a DOCX or TXT file", type=["docx", "txt"])
+# Text input or file upload
+option = st.radio("Select Input Option", ("Upload File", "Enter Text"))
 
-if uploaded_file is not None:
-    file_extension = uploaded_file.name.split(".")[-1]
+if option == "Upload File":
+    uploaded_file = st.file_uploader("Upload a DOCX or TXT file", type=["docx", "txt"])
 
-    if file_extension.lower() == "docx":
-        text = read_docx(uploaded_file)
-    elif file_extension.lower() == "txt":
-        text = uploaded_file.read().decode("utf-8")
-    else:
-        st.error("Invalid file format. Please upload a DOCX or TXT file.")
-        st.stop()
+    if uploaded_file is not None:
+        file_extension = uploaded_file.name.split(".")[-1]
 
+        if file_extension.lower() == "docx":
+            text = read_docx(uploaded_file)
+        elif file_extension.lower() == "txt":
+            text = uploaded_file.read().decode("utf-8")
+        else:
+            st.error("Invalid file format. Please upload a DOCX or TXT file.")
+            st.stop()
+else:
+    text = st.text_area("Enter the text")
+
+if text:
     st.write("## Text Content")
     st.write(text)
 
@@ -68,5 +76,9 @@ if uploaded_file is not None:
             generate_mp3(text, mp3_file_path)
             st.success("MP3 file generated successfully.")
 
+            # Play the MP3 file
+            audio = AudioSegment.from_file(mp3_file_path)
+            st.audio(audio)
+
             # Download the MP3 file
-            st.download_button("Download MP3", mp3_file_path, "output_hujitools.mp3")
+            st.download_button("Download MP3", mp3_file_path, "mp3")
