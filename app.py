@@ -69,4 +69,4 @@ if uploaded_file is not None:
             st.success("MP3 file generated successfully.")
 
             # Download the MP3 file
-            st.download_button("Download MP3", mp3_file_path, "mp3")
+            st.download_button("Download MP3", mp3_file_path, "output_hujitools.mp3")
