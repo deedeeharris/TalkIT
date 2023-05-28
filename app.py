@@ -1,12 +1,11 @@
 import streamlit as st
 import pdfplumber
 import pyttsx3
-import base64
 
 # Add this line to modify the HTML head section
-st.set_page_config(page_title="TalkIt - PDF to mp3!", page_icon="favicon.ico")
+st.set_page_config(page_title="TalkIt - PDF to Text!", page_icon="favicon.ico")
 
-st.title("TalkIt - PDF to mp3!")
+st.title("TalkIt - PDF to Text!")
 st.markdown("#### by [Yedidya Harris](https://www.linkedin.com/in/yedidya-harris)")
 
 st.markdown("## Please upload your PDF")
@@ -28,21 +27,9 @@ if book is not None:
             progress = (i + 1) / total_pages
             progress_bar.progress(progress)
 
-    # Initialize pyttsx3 TTS engine with the "sapi5" driver
-    engine = pyttsx3.init(driverName='sapi5')
+    # Initialize pyttsx3 TTS engine with the "dummy" driver
+    engine = pyttsx3.init(driverName='dummy')
 
-    # Save the text to an audio file
-    audio_file = "audio_book.mp3"
-    engine.save_to_file(all_text, audio_file)
-    engine.runAndWait()
+    # Display the text on the screen
+    st.text_area("Extracted Text", value=all_text, height=400)
 
-    # Download audio file
-    with open(audio_file, 'rb') as audio_file:
-        audio_bytes = audio_file.read()
-        b64 = base64.b64encode(audio_bytes).decode()
-        href = f'<a href="data:audio/mp3;base64,{b64}" download="audio_book.mp3">Download Your Audio File</a>'
-        st.markdown(href, unsafe_allow_html=True)
-
-    audio_file = open(audio_file, 'rb')
-    audio_bytes = audio_file.read()
-    st.audio(audio_bytes, format='audio/mp3')
