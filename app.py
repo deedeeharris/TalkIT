@@ -4,6 +4,7 @@ import docx
 from gtts import gTTS
 from tqdm import tqdm
 import time
+import tempfile
 
 def read_docx(file_path):
     document = docx.Document(file_path)
@@ -13,27 +14,33 @@ def read_docx(file_path):
     return '\n'.join(text)
 
 def generate_mp3(text, file_path):
-    os.makedirs(os.path.dirname(file_path), exist_ok=True)
-    tts = gTTS(text=text, lang='en')
+    temp_dir = tempfile.gettempdir()
+    temp_file_path = os.path.join(temp_dir, "temp.mp3")
 
+    tts = gTTS(text=text, lang='en')
+    
     # Estimate the speech length based on the number of characters
     speech_length = len(text) / 16  # Assuming 16 characters per second
-
+    
     # Create a progress bar with the total length of the speech
     progress_bar = tqdm(total=speech_length, unit='sec', desc='Generating MP3', ncols=80)
-
-    # Save the speech as an MP3 file
-    tts.save(file_path)
-
+    
+    # Save the speech as a temporary MP3 file
+    tts.save(temp_file_path)
+    
     # Update the progress bar every second until it reaches the estimated length
     current_duration = 0
     while current_duration < speech_length:
         time.sleep(1)
         current_duration += 1
         progress_bar.update(1)
-
+    
     # Close the progress bar
     progress_bar.close()
+    
+    # Move the temporary MP3 file to the desired location
+    os.makedirs(os.path.dirname(file_path), exist_ok=True)
+    os.rename(temp_file_path, file_path)
 
 # Streamlit app
 st.title("Text-to-Speech Converter")
@@ -57,7 +64,7 @@ if uploaded_file is not None:
 
     if st.button("Generate MP3"):
         with st.spinner("Generating MP3..."):
-            mp3_file_path = "generated_audio.mp3"  # Change the file name as desired
+            mp3_file_path = os.path.join(tempfile.gettempdir(), "generated_audio.mp3")
             generate_mp3(text, mp3_file_path)
             st.success("MP3 file generated successfully.")
 
